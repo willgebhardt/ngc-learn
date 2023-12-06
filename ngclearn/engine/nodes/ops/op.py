@@ -26,8 +26,4 @@ class Op(Node, ABC):
             for key in self.comp:
                 self.comp[key] = jnp.zeros([batch_size, self.n_units])
 
-    def custom_dump(self, node_directory, template=False) -> dict[str, any]:
-        required_keys = ['n_units']
-        return {k: self.__dict__.get(k, None) for k in required_keys}
-
 class_name = Op.__name__

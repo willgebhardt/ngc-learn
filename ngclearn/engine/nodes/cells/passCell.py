@@ -23,16 +23,7 @@ class PassCell(Cell):  # inherits from Node class
     def step(self):
         self.t = self.t + self.dt
         self.gather()
-        # x = self.comp.get("in") # get input stimulus
         self.comp['out'] = self.comp.get("in")
 
-    # def make_callback(self, comp_name):
-    #     def callback():
-    #         print(self.comp)
-    #         return self.comp[comp_name]
-    #
-    #     return callback
-    #
-    #     # return lambda : self.comp[comp_name]
 
 class_name = PassCell.__name__

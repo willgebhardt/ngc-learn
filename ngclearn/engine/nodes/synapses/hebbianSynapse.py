@@ -85,11 +85,9 @@ class HebbianSynapse(Synapse):  # inherits from Cell class
         self.W = self.evo(pre, pre_gate, post, post_gate, self.W, self.w_bound, self.eta)
 
 
-    def custom_dump(self, node_directory, template=False) -> dict[str, any]:
+    def custom_dump(self, node_directory, template=False):
         if not template:
             jnp.save(node_directory + "/W.npy", self.W)
-        required_keys = ['shape', 'eta', 'sign']
-        return {k: self.__dict__.get(k, None) for k in required_keys}
 
     def custom_load(self, node_directory):
         if os.path.isfile(node_directory + "/W.npy"):

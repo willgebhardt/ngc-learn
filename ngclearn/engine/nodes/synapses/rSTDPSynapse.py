@@ -213,13 +213,9 @@ class RSTDPSynapse(Synapse):  # inherits from Node class
             self.comp['rSum'] = 0.
             self.comp['rN'] = 0.
 
-    def custom_dump(self, node_directory, template=False) -> dict[str, any]:
+    def custom_dump(self, node_directory, template=False):
         if not template:
             jnp.save(node_directory + "/W.npy", self.W)
-        required_keys = ['shape', 'tau_e', 'tau_w', 'x_tar', 'sign', 'eta',
-                         'Aplus', 'Aminus', 'exp_beta', 'w_norm', 'use_td_error',
-                         'reset_Elg_on_reward', 'push_rate', 'push_amount']
-        return {k: self.__dict__.get(k, None) for k in required_keys}
 
     def custom_load(self, node_directory):
         if os.path.isfile(node_directory + "/W.npy"):

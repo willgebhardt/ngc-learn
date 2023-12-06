@@ -34,16 +34,4 @@ class Cell(Node, ABC):
             for key in self.comp:
                 self.comp[key] = jnp.zeros([batch_size, self.n_units])
 
-    def custom_dump(self, node_directory, template=False) -> dict[str, any]:
-        """
-        Dumping/saving function for this cell.
-
-        Args:
-            node_directory:
-
-            template:
-        """
-        required_keys = ['n_units']
-        return {k: self.__dict__.get(k, None) for k in required_keys}
-
 class_name = Cell.__name__

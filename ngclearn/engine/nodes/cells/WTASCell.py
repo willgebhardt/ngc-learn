@@ -66,10 +66,10 @@ class WTASCell(Cell):  # inherits from Node class
 
         # per-unit threshold values
         self.key, *subkeys = random.split(self.key, 2)
-        jitter = thr_jitter #0.05
+        self.thr_jitter = thr_jitter #0.05
         #self.thr0 = v_thr_base
         self.thr0 = v_thr_base + random.uniform(subkeys[0], (1, self.n_units),
-                                                minval=-jitter, maxval=jitter,
+                                                minval=-self.thr_jitter, maxval=self.thr_jitter,
                                                 dtype=jnp.float32)
 
         # cell compartments

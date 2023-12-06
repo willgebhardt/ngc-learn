@@ -84,11 +84,9 @@ class EvSTDPSynapse(Synapse):  # inherits from Node class
         self.W = _evolve(_pre, _post, self.W, self.w_bound, self.eta, self.lamb,
                          self.w_norm)
 
-    def custom_dump(self, node_directory, template=False) -> dict[str, any]:
+    def custom_dump(self, node_directory, template=False):
         if not template:
             jnp.save(node_directory + "/W.npy", self.W)
-        required_keys = ['shape', 'lamb', 'sign', 'eta', 'w_norm']
-        return {k: self.__dict__.get(k, None) for k in required_keys}
 
     def custom_load(self, node_directory):
         if os.path.isfile(node_directory + "/W.npy"):

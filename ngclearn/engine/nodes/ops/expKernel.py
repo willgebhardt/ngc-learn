@@ -62,11 +62,6 @@ class ExpKernel(Op):  # inherits from Node class
             super().set_to_rest(batch_size)
             self.comp["tf"] = jnp.zeros([self.win_len, batch_size, self.n_units])
 
-    def custom_dump(self, node_directory, template=False):
-        required_keys = ['nu', 'tau_w']
-        return {**super().custom_dump(node_directory, template),
-                **{k: self.__dict__.get(k, None) for k in required_keys}}
-
     @staticmethod
     def get_default_out():
         """

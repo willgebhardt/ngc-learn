@@ -49,11 +49,6 @@ class PoissCell(Cell):  # inherits from Node class
             self.comp["tols"] = 0
         self.comp["tols"] = (1 - s) * self.comp["tols"] + (s * self.t)
 
-    def custom_dump(self, node_directory, template=False):
-        required_keys = ['max_lag']
-        return {**super().custom_dump(node_directory, template),
-                **{k: self.__dict__.get(k, None) for k in required_keys}}
-
     @staticmethod
     def get_default_out():
         """

@@ -82,11 +82,6 @@ class VarTrace(Op):  # inherits from Node class
                                decay_type=self.decay_type)  ## run filter
         self.comp["z"] = _z
 
-    def custom_dump(self, node_directory, template=False):
-        required_keys = ['tau_tr', 'incr_pos', 'a_delta', 'decay_type']
-        return {**super().custom_dump(node_directory, template),
-                **{k: self.__dict__.get(k, None) for k in required_keys}}
-
     @staticmethod
     def get_default_out():
         """

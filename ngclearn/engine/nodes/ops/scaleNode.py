@@ -26,9 +26,4 @@ class ScaleNode(Op):  # inherits from Node class
         self.gather()
         self.comp['out'] = self.scale * (1 - self.comp['in']) ## hacky hard-coded inversion
 
-    def custom_dump(self, node_directory, template=False) -> dict[str, any]:
-        required_keys = {'scale': self.scale}
-        return {**super().custom_dump(node_directory, template),
-                **{k: self.__dict__.get(k, None) for k in required_keys}}
-
 class_name = ScaleNode.__name__

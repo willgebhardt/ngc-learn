@@ -45,11 +45,9 @@ class ProjectionSynapse(Synapse):  # inherits from Cell class
         self.comp['out'] = run_synapse(i, self.W, self.sign)
         self.t = self.t + self.dt
 
-    def custom_dump(self, node_directory, template=False) -> dict[str, any]:
+    def custom_dump(self, node_directory, template=False):
         if not template:
             jnp.save(node_directory + "/W.npy", self.W)
-        required_keys = ['shape', 'sign']
-        return {k: self.__dict__.get(k, None) for k in required_keys}
 
     def custom_load(self, node_directory):
         if os.path.isfile(node_directory + "/W.npy"):

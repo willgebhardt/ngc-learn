@@ -36,8 +36,8 @@ class Node(ABC):
     def custom_load(self, node_directory):
         return
 
-    def custom_dump(self, node_directory, template=False) -> dict[str, any]:
-        return {}
+    def custom_dump(self, node_directory, template=False) -> dict[str, any] | None:
+        return
 
     def dump(self, nodes_directory, overwrite=True, template=False):
         if not os.path.isdir(nodes_directory):

@@ -139,13 +139,10 @@ class QuadLIFCell(LIFCell):  # inherits from LIFCell class
         self.comp["f(s)"] = _s * self.sign
         self.comp["tols"] = (1 - _s) * self.comp["tols"] + (_s * self.t)
 
-    def custom_dump(self, node_directory, template=False) -> dict[str, any]:
+    def custom_dump(self, node_directory, template=False):
         if not template:
             jnp.save(node_directory + "/thr0.npy", self.thr0)
             jnp.save(node_directory + "/thr.npy", self.comp["thr"])
-        required_keys = ['v_c', 'a0']
-        return {**super().custom_dump(node_directory, template),
-                **{k: self.__dict__.get(k, None) for k in required_keys}}
 
     @staticmethod
     def get_default_in():

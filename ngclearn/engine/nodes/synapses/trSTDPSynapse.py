@@ -156,12 +156,9 @@ class TrSTDPSynapse(Synapse):  # inherits from Node class
                                           mu=self.mu, Aplus=self.Aplus,
                                           Aminus=self.Aminus, w_norm=self.w_norm)
 
-    def custom_dump(self, node_directory, template=False) -> dict[str, any]:
+    def custom_dump(self, node_directory, template=False):
         if not template:
             jnp.save(node_directory + "/W.npy", self.W)
-        required_keys = ['shape', 'mu', 'exp_beta', 'x_tar', 'Aplus',
-                         'Aminus', 'sign', 'eta', 'w_norm']
-        return {k: self.__dict__.get(k, None) for k in required_keys}
 
     def custom_load(self, node_directory):
         if os.path.isfile(node_directory + "/W.npy"):
