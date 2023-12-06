@@ -55,9 +55,14 @@ class Node(ABC):
             os.mkdir(nodes_directory + "/" + self.name)
         node_directory = nodes_directory + "/" + self.name
 
-        additional_dict = self.custom_dump(node_directory, template=template)
+        additional_vals = self.custom_dump(node_directory, template=template)
+        if additional_vals is None:
+            additional_vals = {}
 
-        all_data = {k: self.__dict__.get(k, None) for k in ['name', 'dt']} | additional_dict | {'type': self.__class__.__name__}
+        count = self.__class__.__init__.__code__.co_argcount
+        param_list = self.__class__.__init__.__code__.co_varnames[:count]
+        all_data = {k: self.__dict__.get(k, None) for k in param_list} | additional_vals | {'type': self.__class__.__name__}
+        del all_data['self']
         all_data['key'] = self.key.tolist()
         with open(node_directory + "/data.json", 'w') as f:
             json.dump(all_data, f)

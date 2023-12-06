@@ -13,8 +13,7 @@ class Node_Factory:
         self.load_from_dir('ngclearn/engine/nodes/synapses')
 
     def load_from_dir(self, path):
-        modules = glob.glob(join(sys.path[1] + '/' + path, "*.py"))
-
+        modules = glob.glob(join(sys.path[1] + '/ngc-learn/' + path, "*.py"))
         for module in modules:
             if module.endswith('__init__.py'):
                 continue
@@ -41,6 +40,7 @@ class Node_Factory:
             key = jax.numpy.array(data['key'], dtype=jax.numpy.uint32)
             data['key'] = key
 
+        print(data)
         node = node_class(**data)
         node.custom_load(directory)
         return node
