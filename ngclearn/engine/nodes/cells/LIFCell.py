@@ -124,9 +124,9 @@ class LIFCell(Cell):  # inherits from Node class
 
         # per-unit threshold values
         self.key, *subkeys = random.split(self.key, 2)
-        jitter = thr_jitter #0.1 #0.035
+        self.thr_jitter = thr_jitter #0.1 #0.035
         self.thr0 = v_thr_base + random.uniform(subkeys[0], (1, self.n_units),
-                                                minval=-jitter, maxval=jitter,
+                                                minval=-self.thr_jitter, maxval=self.thr_jitter,
                                                 dtype=jnp.float32)
 
         ## heuristic lateral inhibition (via a Hollow matrix approximation)
@@ -196,10 +196,6 @@ class LIFCell(Cell):  # inherits from Node class
         if not template:
             jnp.save(node_directory + "/thr0.npy", self.thr0)
             jnp.save(node_directory + "/thr.npy", self.comp["thr"])
-        required_keys = ['tau_m', 'R_m', 'v_thr_base', 'thr_mode', 'thr_gain',
-                         'thr_decay', 'spk_mode', 'sign', 'lat_Rinh']
-        return {**super().custom_dump(node_directory, template),
-                **{k: self.__dict__.get(k, None) for k in required_keys}}
 
     def custom_load(self, node_directory):
         if os.path.isfile(node_directory + "/thr0.npy"):
