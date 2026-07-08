@@ -1,5 +1,5 @@
 import time
-from typing import TypedDict, List, Protocol, Sequence
+from typing import TypedDict, List, Protocol, Sequence, Callable
 from typing_extensions import Unpack
 import jax
 import numpy
@@ -41,7 +41,7 @@ class DistributionParams(TypedDict, total=False):
     eye: bool
     col_mask: int | List[int]
     row_mask: int | List[int]
-    sparsity: float
+    sparsity: float | Callable
     use_numpy: bool
     dtype: numpy.dtype
 
@@ -368,12 +368,19 @@ class DistributionGenerator(object):
 
         sparsity = params.get("sparsity", None)
         if sparsity is not None:
-            if 0 > sparsity or sparsity > 1:
-                warn("matrix sparsity must be between 0 and 1 for it to function correctly")
-            dKey, subKey = jax.random.split(dKey, 2)
-            mask = jax.random.uniform(subKey, shape=ary.shape, minval=0, maxval=1)
-            ary = jax.numpy.where(mask <= sparsity, 0, ary)
+            if isinstance(sparsity, Callable):
+                coords = jax.numpy.indices(ary.shape)
+                p = sparsity(*coords)
+                dKey, subKey = jax.random.split(dKey, 2)
+                mask = jax.random.uniform(subKey, shape=ary.shape)
+                ary = jax.numpy.where(mask <= p, ary, 0)
 
+            elif 0 > sparsity or sparsity > 1:
+                warn("matrix sparsity must be between 0 and 1 for it to function correctly")
+            else:
+                dKey, subKey = jax.random.split(dKey, 2)
+                mask = jax.random.uniform(subKey, shape=ary.shape, minval=0, maxval=1)
+                ary = jax.numpy.where(mask <= sparsity, ary, 0)
         return ary.astype(params.get("dtype", jax.numpy.float32))
 
     @staticmethod

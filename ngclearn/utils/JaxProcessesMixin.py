@@ -79,24 +79,29 @@ class JaxProcessesMixin:
         self._previous_state = None
 
 
-    def scan(self: "BaseProcess", inputs, current_state=None, store_state: bool = True, store_results: bool = True, bind_names=False):
+    def scan(self: "BaseProcess", inputs, current_state=None, save_state=True, store_state: bool = True, store_results: bool = True, bind_names=False):
         """
         Runs the process through jax's scan method
         Args:
             inputs: The inputs for scan (use pack rows to generate), must be a jax array
             current_state: Optional, the current state of the model, if none uses current global state
+            save_state: Optional flag, should the global state be updated
             store_state: Optional flag, should the final state be stored in the process
             store_results: Optional flag, should the final result be stored in the process
 
         Returns: the final state, the final result
 
         """
+
         state = current_state or stateManager.state
         final_state, result = jax.lax.scan(self.run.compiled, state, inputs)
         if store_state:
             self._previous_state = final_state
         if store_results:
             self._previous_result = self._bind(result) if bind_names else result
+
+        if save_state:
+            stateManager.state = final_state
         return final_state, self._bind(result) if bind_names else result
 
     def compile(self: "baseProcess"):
