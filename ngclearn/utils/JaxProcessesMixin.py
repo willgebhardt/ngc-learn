@@ -79,7 +79,7 @@ class JaxProcessesMixin:
         self._previous_state = None
 
 
-    def scan(self: "BaseProcess", inputs, current_state=None, store_state: bool = True, store_results: bool = True):
+    def scan(self: "BaseProcess", inputs, current_state=None, store_state: bool = True, store_results: bool = True, bind_names=False):
         """
         Runs the process through jax's scan method
         Args:
@@ -96,8 +96,8 @@ class JaxProcessesMixin:
         if store_state:
             self._previous_state = final_state
         if store_results:
-            self._previous_result = result
-        return final_state, result
+            self._previous_result = self._bind(result) if bind_names else result
+        return final_state, self._bind(final_state) if bind_names else final_state
 
     def compile(self: "baseProcess"):
         """

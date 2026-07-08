@@ -4,7 +4,7 @@ from typing_extensions import Unpack
 import jax
 import numpy
 
-from ngcsimlib.logger import error
+from ngcsimlib.logger import error, warn
 
 
 class DistributionParams(TypedDict, total=False):
@@ -28,6 +28,8 @@ class DistributionParams(TypedDict, total=False):
 
         row_mask: single value, keeps n random rows; list values, keeps the provided row indices
 
+        sparsity: float (0, 1], signifies the percent of the matrix to keep
+
         use_numpy: use default numpy
 
     """
@@ -39,6 +41,7 @@ class DistributionParams(TypedDict, total=False):
     eye: bool
     col_mask: int | List[int]
     row_mask: int | List[int]
+    sparsity: float
     use_numpy: bool
     dtype: numpy.dtype
 
@@ -179,7 +182,7 @@ class DistributionGenerator(object):
             def log_gaussian_generator(shape: Sequence[int], dKey: jax.Array | None = None) -> jax.Array:
                 if dKey is None:
                     dKey = jax.random.PRNGKey(time.time_ns())
-                dKey, subKey = jax.random.split(dKey, 2)
+                dKey, subKey = jax.random.split(dKey, 3)
 
                 matrix = jax.random.lognormal(
                     dkey,
@@ -363,6 +366,14 @@ class DistributionGenerator(object):
                 mask = jax.numpy.broadcast_to(mask, ary.shape)
                 ary = jax.numpy.where(mask, ary, 0)
 
+        sparsity = params.get("sparsity", None)
+        if sparsity is not None:
+            if 0 > sparsity or sparsity > 1:
+                warn("matrix sparsity must be between 0 and 1 for it to function correctly")
+            dKey, subKey = jax.random.split(dKey, 2)
+            mask = jax.random.uniform(subKey, shape=ary.shape, minval=0, maxval=1)
+            ary = jax.numpy.where(mask <= sparsity, 0, ary)
+
         return ary.astype(params.get("dtype", jax.numpy.float32))
 
     @staticmethod
@@ -420,5 +431,13 @@ class DistributionGenerator(object):
                 mask[list(row_mask)] = True
                 mask = numpy.broadcast_to(mask, ary.shape)
                 ary = numpy.where(mask, ary, 0)
+
+        sparsity = params.get("sparsity", None)
+        if sparsity is not None:
+            if 0 > sparsity or sparsity > 1:
+                warn("matrix sparsity must be between 0 and 1 for it to function correctly")
+            rng = numpy.random.default_rng(seed)
+            mask = rng.uniform(0.0, 1.0, size=ary.shape)
+            ary = numpy.where(mask <= sparsity, 0, ary)
 
         return ary
